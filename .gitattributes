@@ -6,20 +6,20 @@ import javax.swing.*;
 
 import java.awt.event.*;
 
-public class UserGUI extends UserManager implements ActionListener {
- int rm;
- int number = 1001;
- JFrame frame1;
- JPanel p;
- JLabel LBNum, LBName, LBBirth, LBGender, LBPhone, LBJob, LBAddress, LBKind, LBS_Day, LBE_Day; 
- JTextField tfNum, tfName, tfAddress, tfJob; // 번호, 이름, 주소, 직업
- JTextField tfPhone1, tfPhone2, tfPhone3; // 핸드폰번호
- Choice CYear, CMonth, CDay; // 생년월일
- Choice S_Year, S_Month, S_Day; // 등록일
  Choice E_Year, E_Month, E_Day; // 만료일
- JRadioButton rbMan, rbWoman; // 성별
- JRadioButton rbYes, rbNo; // 개인PT신청 유무
- JButton btnAdd, btnCancel, btnModify, btnRemove; // 가입, 취소, 수정, 탈퇴
+import javax.swing.table.DefaultTableModel;
+
+public class UserManager extends JFrame implements  ActionListener , MouseListener{
+ ArrayList<User> us = new ArrayList<User>();
+ JFrame frame;
+ JPanel panel;
+ JTable table;
+ JScrollPane sp;
+ JButton btnAdd;
+ DefaultTableModel model;
+ Vector colName;
+ Vector data;
+ Vector data1;
  
  GridBagLayout gb;
  GridBagConstraints gbc;
