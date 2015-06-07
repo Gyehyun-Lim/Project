@@ -1,0 +1,48 @@
+package Project2;
+import java.awt.*;
+import java.util.*;
+
+import javax.swing.*;
+
+import java.awt.event.*;
+
+public class ManageGUI extends JFrame implements ActionListener, ItemListener
+{
+	UserManager UM = new UserManager();
+	JComboBox cb;
+	public ManageGUI()
+	{
+		setTitle("회원관리");
+		setSize(300,70);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		cb = new JComboBox();
+		cb.setBounds(10, 10, 183, 21);
+		cb.addItem("회원을 선택하세요");
+		for(int i = 0; i < UM.List.size(); i++)
+		{
+			cb.addItem(UM.List.get(i).getNum() + ". " + UM.List.get(i).getName());
+		}
+		getContentPane().add(cb);
+		setVisible(true);
+		cb.addItemListener(this);
+	}
+	
+
+	@Override
+	public void itemStateChanged(ItemEvent arg0) 
+	{
+		if(cb.getSelectedIndex() != 0)
+		{
+			int selected = cb.getSelectedIndex() - 1;
+			new UserGUI(selected);
+			this.dispose();
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
