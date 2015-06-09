@@ -1,0 +1,641 @@
+package Project2;
+
+import java.awt.*;
+import java.util.*;
+
+import javax.swing.*;
+
+import java.awt.event.*;
+
+public class UserGUI extends JFrame implements ActionListener, ItemListener {
+	UserManager UM = new UserManager();
+	MainGUI mg;
+	int index = -1;
+	JFrame frame;
+	JPanel p;
+	JLabel LBNum, LBName, LBBirth, LBGender, LBPhone, LBJob, LBAddress, LBKind, LBTrainer, LBS_Day, LBE_Day; 
+	JTextField tfNum, tfName, tfAddress, tfJob; // 번호, 이름, 주소, 직업
+	JTextField tfPhone1, tfPhone2, tfPhone3; // 핸드폰번호
+	Choice CYear, CMonth, CDay; // 생년월일
+	Choice S_Year, S_Month, S_Day; // 등록일
+	Choice E_Year, E_Month, E_Day; // 만료일
+	Choice CTrainer; // 트레이너
+	JRadioButton rbMan, rbWoman; // 성별
+	JRadioButton rbYes, rbNo; // 개인PT신청 유무
+	public JButton btnAdd, btnCancel, btnModify, btnRemove; // 가입, 취소, 수정, 탈퇴
+	int day[];
+	GridBagLayout gb;
+	GridBagConstraints gbc;
+	public Vector v;
+	
+	public UserGUI(MainGUI mg)
+	{	this.mg = mg;
+		CreateGUI();
+		btnModify.setEnabled(false);
+		btnModify.setVisible(false);
+		btnRemove.setEnabled(false);
+		btnRemove.setVisible(false);
+	}
+	public UserGUI(MainGUI mg, int num)
+	{
+		this.mg = mg;
+		CreateGUI();
+		fillData(num);
+		btnAdd.setEnabled(false);
+		btnAdd.setVisible(false);
+		index = num;
+	}
+	private void CreateGUI()
+	{
+		this.setTitle("회원정보");
+		gb = new GridBagLayout();
+		this.setLayout(gb);
+		gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		
+		//회원번호
+		LBNum = new JLabel("회원번호 : ");
+		tfNum = new JTextField(5);
+		gbAdd(LBNum, 0, 0, 1, 1);
+		gbAdd(tfNum, 1, 0, 3, 1);
+		
+		//회원이름
+		LBName = new JLabel("회원이름 : ");
+		tfName = new JTextField(5);
+		// 그리드백에 추가
+		gbAdd(LBName, 0, 1, 1, 1);
+		gbAdd(tfName, 1, 1 , 3, 1);
+		
+		//생년월일
+		LBBirth = new JLabel("생년월일 : ");
+		CYear = new Choice();
+		JLabel LBYear = new JLabel("년");
+		CMonth = new Choice();
+		JLabel LBMonth = new JLabel("월");
+		CDay = new Choice();
+		JLabel LBDay = new JLabel("일");
+		CYear.addItem("-------");
+		for(int i = 2010; i >= 1930; i--)
+		{
+			CYear.addItem(String.valueOf(i));
+		} // CYear의 choice에 추가
+		CMonth.addItem("-------");
+		for(int i = 1; i <= 12; i++)
+		{
+			CMonth.addItem(String.valueOf(i));
+		} // CMonth의 choice에 추가
+		CMonth.addItemListener(this);
+		CDay.addItem("-------");
+	
+		JPanel PBirth = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		PBirth.add(CYear);
+		PBirth.add(LBYear);
+		PBirth.add(CMonth);
+		PBirth.add(LBMonth);
+		PBirth.add(CDay);
+		PBirth.add(LBDay);
+		gbAdd(LBBirth, 0, 2, 1, 1);
+		gbAdd(PBirth, 1, 2, 3, 1);
+		
+		//성별
+		LBGender = new JLabel("성별 : ");
+		rbMan = new JRadioButton("남",true);
+		rbWoman = new JRadioButton("여",true);
+		JPanel PGender = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		ButtonGroup group = new ButtonGroup();
+		group.add(rbMan);
+		group.add(rbWoman);
+		PGender.add(rbMan);
+		PGender.add(rbWoman);
+		gbAdd(LBGender, 0, 3, 1, 1);
+		gbAdd(PGender, 1, 3, 3, 1);
+		
+		//핸드폰번호
+		LBPhone = new JLabel("핸드폰번호 : ");
+		tfPhone1 = new JTextField(3);
+		tfPhone2 = new JTextField(4);
+		tfPhone3 = new JTextField(4);
+		JPanel PPhone = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		PPhone.add(tfPhone1);
+		PPhone.add(new JLabel(" - "));
+		PPhone.add(tfPhone2);
+		PPhone.add(new JLabel(" - "));
+		PPhone.add(tfPhone3);
+		gbAdd(LBPhone, 0, 4, 1, 1);
+		gbAdd(PPhone, 1, 4, 3, 1);
+		
+		//직업
+		LBJob = new JLabel("직업 : ");
+		tfJob = new JTextField(5);
+		gbAdd(LBJob, 0, 5, 1, 1);
+		gbAdd(tfJob, 1, 5, 3, 1);
+		
+		//주소
+		LBAddress = new JLabel("주소 : ");
+		tfAddress = new JTextField(20);
+		gbAdd(LBAddress, 0, 6, 1, 1);
+		gbAdd(tfAddress, 1, 6, 3, 1);
+		
+		//개인PT 유무
+		LBKind = new JLabel("개인PT : ");
+		rbYes = new JRadioButton("Y",true);
+		rbNo = new JRadioButton("N",true);
+		JPanel PKind = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		ButtonGroup group1 = new ButtonGroup();
+		group1.add(rbYes);
+		group1.add(rbNo);
+		PKind.add(rbYes);
+		PKind.add(rbNo);
+		gbAdd(LBKind, 0, 7, 1, 1);
+		gbAdd(PKind, 1, 7, 3, 1);
+		
+		
+		//트레이너
+		LBTrainer = new JLabel("트레이너 : ");
+		CTrainer = new Choice();
+		CTrainer.addItem("-------");
+		String trainer[] = {"숀리", "줄리엔", "유재석", "예정화", "김수현", "차태현", "박명수", "김종국", "윤형빈", "남의석"};
+		for(int i = 0; i < trainer.length; i++)
+		{
+			CTrainer.add(trainer[i]);
+		}
+		rbNo.addItemListener(this);
+		JPanel PTrainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		PTrainer.add(CTrainer);
+		gbAdd(LBTrainer, 0, 8, 1, 1);
+		gbAdd(PTrainer, 1, 8, 3, 1);
+		
+		//등록일
+		LBS_Day = new JLabel("등록일 : ");
+		S_Year = new Choice();
+		JLabel LBS_Year = new JLabel("년");
+		S_Month = new Choice();
+		JLabel LBS_Month = new JLabel("월");
+		S_Day = new Choice();
+		JLabel LBS_day = new JLabel("일");
+		S_Year.addItem("-------");
+		for(int i = 2015; i >= 2010; i--)
+		{
+			S_Year.addItem(String.valueOf(i));
+		}
+		S_Month.addItem("-------");
+		for(int i = 1; i <= 12; i++)
+		{
+			S_Month.addItem(String.valueOf(i));
+		}
+		S_Month.addItemListener(this);
+		S_Day.addItem("-------");
+		
+		JPanel PS_day = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		PS_day.add(S_Year);
+		PS_day.add(LBS_Year);
+		PS_day.add(S_Month);
+		PS_day.add(LBS_Month);
+		PS_day.add(S_Day);
+		PS_day.add(LBS_day);
+		gbAdd(LBS_Day, 0, 9, 1, 1);
+		gbAdd(PS_day, 1, 9, 3, 1);
+		
+		
+		//만료일
+		LBE_Day = new JLabel("만료일 : ");
+		E_Year = new Choice();
+		JLabel LBE_Year = new JLabel("년");
+		E_Month = new Choice();
+		JLabel LBE_Month = new JLabel("월");
+		E_Day = new Choice();
+		JLabel LBE_day = new JLabel("일");
+		
+		E_Year.addItem("-------");
+		for(int i = 2017; i >= 2015; i--)
+		{
+			E_Year.addItem(String.valueOf(i));
+		}
+		E_Month.addItem("-------");
+		for(int i = 1; i <= 12; i++)
+		{
+			E_Month.addItem(String.valueOf(i));
+		}
+		E_Month.addItemListener(this);
+		E_Day.addItem("-------");
+
+		JPanel PE_day = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		PE_day.add(E_Year);
+		PE_day.add(LBE_Year);
+		PE_day.add(E_Month);
+		PE_day.add(LBE_Month);
+		PE_day.add(E_Day);
+		PE_day.add(LBE_day);
+		gbAdd(LBE_Day, 0, 10, 1, 1);
+		gbAdd(PE_day, 1, 10, 3, 1);
+		
+		//버튼
+		JPanel PButton = new JPanel();
+		btnAdd = new JButton("가입");
+		btnModify = new JButton("수정");
+		btnRemove = new JButton("탈퇴");
+		btnCancel = new JButton("취소");
+		PButton.add(btnAdd);
+		PButton.add(btnModify);
+		PButton.add(btnRemove);
+		PButton.add(btnCancel);
+		
+		gbAdd(PButton, 0, 11, 4, 1);
+		
+		btnAdd.addActionListener(this);
+		btnModify.addActionListener(this);
+		btnRemove.addActionListener(this);
+		btnCancel.addActionListener(this);
+		
+		this.setSize(350, 500);
+		this.setVisible(true);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE); // 현재창만 종료	
+	}
+	private void fillData(int index)
+	{
+		
+		String num = UM.List.get(index).getNum();
+		String name = UM.List.get(index).getName();
+		String birth = UM.List.get(index).getBirth();
+		String gender = UM.List.get(index).getGender();
+		String phone = UM.List.get(index).getPhone();
+		String job = UM.List.get(index).getJob();
+		String address = UM.List.get(index).getAddress();
+		String kind =UM.List.get(index).getKind();
+		String trainer = UM.List.get(index).getTrainer();
+		String start_day = UM.List.get(index).getStart_day();
+		String end_day = UM.List.get(index).getEnd_day();
+		tfNum.setText(num);
+		tfNum.setEditable(false);
+		tfName.setText(name);
+		String bir[] = birth.split("/");
+		CYear.select(bir[0]);
+		CMonth.select(bir[1]);
+		CMonth.addItemListener(this);
+		CDay.select(bir[2]);
+		if(gender.equals("남"))
+		{
+			rbMan.setSelected(true);
+		}
+		else if(gender.equals("여"))
+		{
+			rbWoman.setSelected(true);
+		}
+		String Pns[] = phone.split("-"); // 핸드폰번호를 split으로 나누기
+		tfPhone1.setText(Pns[0]);
+		tfPhone2.setText(Pns[1]);
+		tfPhone3.setText(Pns[2]);
+		tfJob.setText(job);
+		tfAddress.setText(address);
+		if(kind.equals("Y"))
+		{
+			rbYes.setSelected(true);
+		}
+		else if(kind.equals("N"))
+		{
+			rbNo.setSelected(true);
+		}
+		rbNo.addItemListener(this);
+		CTrainer.select(trainer);
+		String Sd[] = start_day.split("/");
+		S_Year.select(Sd[0]);
+		S_Month.select(Sd[1]);
+		S_Month.addItemListener(this);
+		S_Day.select(Sd[2]);
+		String Ed[] = end_day.split("/");
+		E_Year.select(Ed[0]);
+		E_Month.select(Ed[1]);
+		E_Month.addItemListener(this);
+		E_Day.select(Ed[2]);
+	}
+	private void gbAdd(JComponent c, int x, int y, int w, int h) 
+	{
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gb.setConstraints(c, gbc);
+		gbc.insets = new Insets(2, 2, 2, 2); // 여백생성
+		add(c, gbc);
+	} // 그리드백레이아웃에 추가하는 메소드
+	
+	
+	public void itemStateChanged(ItemEvent ie)
+	{
+		if(CMonth.getSelectedIndex() == 2)
+		{
+			CDay.removeAll();
+			for(int i = 1; i <= 28; i++)
+			{
+				CDay.addItem(String.valueOf(i));
+			}
+		}
+		else if(CMonth.getSelectedIndex() == 4 || CMonth.getSelectedIndex() == 6 || CMonth.getSelectedIndex() == 9 || CMonth.getSelectedIndex() == 11)
+		{
+			CDay.removeAll();
+			for(int i = 1; i <= 30; i++)
+			{
+				CDay.addItem(String.valueOf(i));
+			}
+		}
+		else if(CMonth.getSelectedIndex() == 1 || CMonth.getSelectedIndex() == 3 || CMonth.getSelectedIndex() == 5 || CMonth.getSelectedIndex() == 7 || CMonth.getSelectedIndex() == 8 || CMonth.getSelectedIndex() == 10 || CMonth.getSelectedIndex() == 12)
+		{
+			CDay.removeAll();
+			for(int i = 1; i <= 31; i++)
+			{
+				CDay.addItem(String.valueOf(i));
+			}
+		}
+		if(S_Month.getSelectedIndex() == 2)
+		{
+			S_Day.removeAll();
+			for(int i = 1; i <= 28; i++)
+			{
+				S_Day.addItem(String.valueOf(i));
+			}
+		}
+		else if(S_Month.getSelectedIndex() == 4 || S_Month.getSelectedIndex() == 6 || S_Month.getSelectedIndex() == 9 || S_Month.getSelectedIndex() == 11)
+		{
+			S_Day.removeAll();
+			for(int i = 1; i <= 30; i++)
+			{
+				S_Day.addItem(String.valueOf(i));
+			}
+		}
+		else if(S_Month.getSelectedIndex() == 1 || S_Month.getSelectedIndex() == 3 || S_Month.getSelectedIndex() == 5 || S_Month.getSelectedIndex() == 7 || S_Month.getSelectedIndex() == 8 || S_Month.getSelectedIndex() == 10 || S_Month.getSelectedIndex() == 12)
+		{
+			S_Day.removeAll();
+			for(int i = 1; i <= 31; i++)
+			{
+				S_Day.addItem(String.valueOf(i));
+			}
+		}
+		if(E_Month.getSelectedIndex() == 2)
+		{
+			E_Day.removeAll();
+			for(int i = 1; i <= 28; i++)
+			{
+				E_Day.addItem(String.valueOf(i));
+			}
+		}
+		else if(E_Month.getSelectedIndex() == 4 || E_Month.getSelectedIndex() == 6 || E_Month.getSelectedIndex() == 9 || E_Month.getSelectedIndex() == 11)
+		{
+			E_Day.removeAll();
+			for(int i = 1; i <= 30; i++)
+			{
+				E_Day.addItem(String.valueOf(i));
+			}
+		}
+		else if(E_Month.getSelectedIndex() == 1 || E_Month.getSelectedIndex() == 3 || E_Month.getSelectedIndex() == 5 || E_Month.getSelectedIndex() == 7 || E_Month.getSelectedIndex() == 8 || E_Month.getSelectedIndex() == 10 || E_Month.getSelectedIndex() == 12)
+		{
+			E_Day.removeAll();
+			for(int i = 1; i <= 31; i++)
+			{
+				E_Day.addItem(String.valueOf(i));
+			}
+		}
+		if(rbNo.isSelected())
+		{
+			CTrainer.removeAll();
+			CTrainer.add("-------");
+			
+		}
+	}
+	public boolean CheckInt(String n)
+	{
+		try
+		{
+			int x = Integer.parseInt(n);
+			return true;
+		}
+		catch(NumberFormatException nf)
+		{
+			return false;
+		}
+	}	
+	public void actionPerformed(ActionEvent e)
+	{
+		if(e.getSource() == btnAdd)
+		{
+			String num = tfNum.getText();
+			String name = tfName.getText();
+			String Byear = (String) CYear.getSelectedItem();
+			String Bmonth = (String) CMonth.getSelectedItem();
+			String Bday = (String) CDay.getSelectedItem();
+			String birth = Byear +"/" + Bmonth + "/" + Bday;
+			String gender = null;
+			if(rbMan.isSelected())
+			{
+				gender = "남";
+			}
+			else if(rbWoman.isSelected())
+			{
+				gender = "여";
+			}
+			String phone1 = tfPhone1.getText();
+			String phone2 = tfPhone2.getText();
+			String phone3 = tfPhone3.getText();
+			String phone = phone1 + "-" + phone2 + "-" + phone3;
+			String job = tfJob.getText();
+			String address = tfAddress.getText();
+			String kind = null;
+			if(rbYes.isSelected())
+			{
+				kind = "Y";
+			}
+			else if(rbNo.isSelected())
+			{
+				kind = "N";
+			}
+			String trainer = (String) CTrainer.getSelectedItem();
+			String Syear = (String) S_Year.getSelectedItem();
+			String Smonth = (String) S_Month.getSelectedItem();
+			String Sday = (String) S_Day.getSelectedItem();
+			String start_day = Syear +"/" + Smonth + "/" + Sday;
+			String Eyear = (String) E_Year.getSelectedItem();
+			String Emonth = (String) E_Month.getSelectedItem();
+			String Eday = (String) E_Day.getSelectedItem();
+			String end_day = Eyear +"/" + Emonth + "/" + Eday;
+			boolean s = true;
+			for(int i = 0; i < UM.List.size(); i++)
+			{
+				if(num.equals(UM.List.get(i).getNum()))
+				{
+					s = false;
+				}
+			}
+			if(s == false)
+			{
+				JOptionPane.showMessageDialog(this, "동일한 회원번호가 있습니다.", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(num.equals(""))
+			{
+				JOptionPane.showMessageDialog(this, "회원 번호를 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(name.equals(""))
+			{
+				JOptionPane.showMessageDialog(this, "회원 이름을 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(Byear.equals("-------") || Bmonth.equals("-------") || Bday.equals("-------") )
+			{
+				JOptionPane.showMessageDialog(this, "생년월일을 선택해주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(phone1.equals("") || phone2.equals("") || phone3.equals("")){
+				JOptionPane.showMessageDialog(this, "핸드폰번호를 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(job.equals(""))
+			{
+				JOptionPane.showMessageDialog(this, "직업을 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(address.equals(""))
+			{
+				JOptionPane.showMessageDialog(this, "주소를 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(CTrainer.equals("-------") && rbYes.isSelected())
+			{
+				JOptionPane.showMessageDialog(this, "트레이너를 선택해주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(Syear.equals("-------") || Smonth.equals("-------") || Sday.equals("-------") )
+			{
+				JOptionPane.showMessageDialog(this, "등록일을 선택해주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(Eyear.equals("-------") || Emonth.equals("-------") || Eday.equals("-------") )
+			{
+				JOptionPane.showMessageDialog(this, "만료일을 선택해주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else
+			{
+				if(CheckInt(num) == false)
+				{
+					JOptionPane.showMessageDialog(this, "회원번호는 숫자만 입력해주세요.", "경고", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else if(CheckInt(phone1) == false || CheckInt(phone2) == false || CheckInt(phone3) == false)
+				{
+					JOptionPane.showMessageDialog(this, "핸드폰번호는 숫자만 입력해주세요.", "경고", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+				else if(num.length() != 4)
+				{
+					JOptionPane.showMessageDialog(this, "회원번호는 4자리를 입력해주세요.", "경고", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else if(phone.length() != 13)
+				{
+					JOptionPane.showMessageDialog(this, "잘못된 전화번호를 입력하였습니다.", "경고", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					UM.AddUser(num, name, birth, gender, phone, job, address, kind, trainer, start_day, end_day);
+					this.dispose();
+					mg.setModel();
+					UM.SaveObject();
+				}
+			}
+		}	
+		else if(e.getSource() == btnCancel)
+		{
+			this.dispose();
+		}
+		else if(e.getSource() == btnModify)
+		{
+			String name = tfName.getText();
+			String Byear = (String) CYear.getSelectedItem();
+			String Bmonth = (String) CMonth.getSelectedItem();
+			String Bday = (String) CDay.getSelectedItem();
+			String birth = Byear +"/" + Bmonth + "/" + Bday;
+			String gender = null;
+			if(rbMan.isSelected())
+			{
+				gender = "남";
+			}
+			else if(rbWoman.isSelected())
+			{
+				gender = "여";
+			}
+			String phone1 = tfPhone1.getText();
+			String phone2 = tfPhone2.getText();
+			String phone3 = tfPhone3.getText();
+			String phone = phone1 + "-" + phone2 + "-" + phone3;
+			String job = tfJob.getText();
+			String address = tfAddress.getText();
+			String kind = null;
+			if(rbYes.isSelected())
+			{
+				kind = "Y";
+			}
+			else if(rbNo.isSelected())
+			{
+				kind = "N";
+			}
+			String trainer = CTrainer.getSelectedItem();
+			String Syear = (String) S_Year.getSelectedItem();
+			String Smonth = (String) S_Month.getSelectedItem();
+			String Sday = (String) S_Day.getSelectedItem();
+			String start_day = Syear +"/" + Smonth + "/" + Sday;
+			String Eyear = (String) E_Year.getSelectedItem();
+			String Emonth = (String) E_Month.getSelectedItem();
+			String Eday = (String) E_Day.getSelectedItem();
+			String end_day = Eyear +"/" + Emonth + "/" + Eday;
+			if(name.equals(""))
+			{
+				JOptionPane.showMessageDialog(this, "회원 이름을 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(Byear.equals("-------") || Bmonth.equals("-------") || Bday.equals("-------") )
+			{
+				JOptionPane.showMessageDialog(this, "생년월일을 선택해주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(phone1.equals("") || phone2.equals("") || phone3.equals("")){
+				JOptionPane.showMessageDialog(this, "핸드폰번호를 입력해 주세요", "메시지", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(job.equals(""))
+			{
+				JOptionPane.showMessageDialog(this, "직업을 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(address.equals(""))
+			{
+				JOptionPane.showMessageDialog(this, "주소를 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(trainer.equals("-------"))
+			{
+				JOptionPane.showMessageDialog(this, "트레이너를 선택해주세요", "메시지", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(Syear.equals("-------") || Smonth.equals("-------") || Sday.equals("-------") )
+			{
+				JOptionPane.showMessageDialog(this, "등록일을 선택해주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else if(Eyear.equals("-------") || Emonth.equals("-------") || Eday.equals("-------") )
+			{
+				JOptionPane.showMessageDialog(this, "만료일을 선택해주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else
+			{
+				if(phone.length() != 13)
+				{
+					JOptionPane.showMessageDialog(this, "잘못된 전화번호를 입력하였습니다.", "메시지", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					UM.ModifyUser(index, name, birth, gender, phone, job,  address, kind, trainer, start_day, end_day);
+					this.dispose();
+					mg.setModel();
+				}
+			}	
+		}
+		else if(e.getSource() == btnRemove)
+		{
+			int a = JOptionPane.showConfirmDialog(this, "정말 삭제하시겠습니까?", "Confirm", JOptionPane.YES_NO_OPTION);
+			if(a == JOptionPane.OK_OPTION)
+			{
+				UM.RemoveUser(index);
+				mg.setModel();
+				this.dispose();
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(this, "취소되었습니다.");
+			}
+		}
+	}
+}
+
