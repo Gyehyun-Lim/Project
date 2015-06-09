@@ -1,0 +1,44 @@
+package Project2;
+import java.awt.*;
+import java.util.*;
+
+import javax.swing.*;
+
+import java.awt.event.*;
+
+public class ManageGUI extends JFrame implements ActionListener
+{
+	MainGUI mg;
+	UserManager UM = new UserManager();
+	JComboBox cb;
+	public ManageGUI(MainGUI mg)
+	{
+		this.mg = mg;
+		setTitle("회원관리");
+		setSize(300,70);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		cb = new JComboBox();
+		cb.setBounds(10, 10, 183, 21);
+		cb.addItem("회원을 선택하세요");
+		for(int i = 0; i < UM.List.size(); i++)
+		{
+			cb.addItem(UM.List.get(i).getNum() + ". " + UM.List.get(i).getName());
+		}
+		getContentPane().add(cb);
+		setVisible(true);
+		cb.addActionListener(this);
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(cb.getSelectedIndex() != 0)
+		{
+			int selected = cb.getSelectedIndex() - 1;
+			System.out.println("1");
+			new UserGUI(mg, selected);
+			this.dispose();
+		}
+		// TODO Auto-generated method stub
+		
+	}
+
+}
