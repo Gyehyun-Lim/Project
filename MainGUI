@@ -1,0 +1,203 @@
+package Project2;
+import java.awt.*;
+import java.util.*;
+
+import javax.swing.*;
+
+import java.awt.event.*;
+
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
+
+public class MainGUI extends JFrame implements ActionListener, MouseListener {
+	static UserManager UM = new UserManager();
+	CardLayout card;
+	TitledBorder border1, border2; 
+	JFrame frame;
+	JPanel panel, Mainpanel, Allpanel, Trainerpanel;
+	JTable Maintable, Trainertable;
+	JScrollPane sp1, sp2;
+	JButton btnAdd, btnManage, btnSearch, btnAll, btnTrainer;
+	Vector col = new Vector();
+	DefaultTableModel model = new DefaultTableModel();
+	DefaultTableModel model2 = new DefaultTableModel();
+
+	public MainGUI(){
+		
+		setTitle("회원관리 프로그램");
+		card = new CardLayout();
+		Mainpanel = new JPanel(card);
+		border1 = new TitledBorder("회원리스트");
+		Mainpanel.setBorder(border1);
+		add(Mainpanel);
+		Allpanel = new JPanel();
+		col = setCol();
+		model = new DefaultTableModel(col, 0)
+		{
+			public boolean isCellEditable(int rowindex, int colindex)
+			{
+				return false;
+			}
+		};
+		Maintable = new JTable(model);
+		sp1 = new JScrollPane(Maintable);
+		Allpanel.add(sp1);
+		Mainpanel.add(Allpanel, "card1");
+		
+		Trainerpanel = new JPanel();
+		model2 = new DefaultTableModel(col, 0)
+		{
+			public boolean isCellEditable(int rowindex, int colindex)
+			{
+				return false;
+			}
+		};
+		Trainertable = new JTable(model2);
+		sp2 = new JScrollPane(Trainertable);
+		Trainerpanel.add(sp2);
+		Mainpanel.add(Trainerpanel, "card2");
+		
+
+		CreateMenu();
+		panel = new JPanel();
+		panel.setLayout(new GridLayout(5, 1 , 0, 10));
+		btnAdd = new JButton("회원등록");
+		btnManage = new JButton("회원관리");
+		btnSearch = new JButton("회원찾기");
+		btnAll = new JButton("전체회원");
+		btnTrainer = new JButton("트레이너");
+		panel.add(btnAdd);
+		panel.add(btnManage);
+		panel.add(btnSearch);
+		panel.add(btnAll);
+		panel.add(btnTrainer);
+		border1 = new TitledBorder("메뉴");
+		panel.setBorder(border1);
+		add(panel, BorderLayout.EAST);
+		
+		card.show(Mainpanel ,"card1");
+		setSize(700, 350);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setVisible(true);
+		
+		Maintable.addMouseListener(this);
+		btnAdd.addActionListener(this);
+		btnManage.addActionListener(this);
+		btnSearch.addActionListener(this);
+		btnAll.addActionListener(this);
+		btnTrainer.addActionListener(this);
+	}
+	private void CreateMenu()
+	{
+		JMenuBar mb = new JMenuBar();
+		setJMenuBar(mb);
+		JMenu menu = new JMenu("File");
+		mb.add(menu);
+		JMenuItem menuOpen = new JMenuItem("데이터 불러오기");
+		JMenuItem menuExit = new JMenuItem("Exit");
+		menu.add(menuOpen);
+		menu.add(menuExit);	
+	}
+	private Vector setCol()
+	{
+		Vector colName = new Vector();
+		colName.add("회원번호");
+		colName.add("회원이름");
+		colName.add("생년월일");
+		colName.add("성별");
+		colName.add("핸드폰번호");
+		colName.add("직업");
+		colName.add("주소");
+		colName.add("개인PT여부");
+		colName.add("트레이너");
+		colName.add("등록일");
+		colName.add("만료일");
+		return colName;
+	}
+	public void setModel()
+	{
+		for(int i = model.getRowCount(); i > 0; i--)
+		{
+			model.removeRow(0);
+		}
+		for(int i = 0; i < UM.List.size(); i++)
+		{
+			model.addRow(UM.List.get(i).setVector());
+		}
+	}
+	public void mouseClicked(MouseEvent e)
+	{
+		int r = Maintable.getSelectedRow();
+		String num = (String) Maintable.getValueAt(r, 0);
+		for(int i = 0; i < UM.List.size(); i++)
+		{
+			if(num.equals(UM.List.get(i).getNum()))
+			{
+				new UserGUI(this, i);
+			}
+		}
+		int x = Trainertable.getSelectedRow();
+		String Num = (String) Maintable.getValueAt(r, 0);
+		for(int i = 0; i < UM.List.size(); i++)
+		{
+			if(Num.equals(UM.List.get(i).getNum()))
+			{
+				new UserGUI(this, i);
+			}
+		}
+	}
+	public void actionPerformed(ActionEvent e)
+	{
+		if(e.getSource() == btnAdd)
+		{
+			new UserGUI(this);
+		}
+		else if(e.getSource() == btnManage)
+		{
+			new ManageGUI(this);
+		}
+		else if(e.getSource() == btnSearch)
+		{
+			new SearchGUI(this);
+		}
+		else if(e.getSource() == btnAll)
+		{
+			card.show(Mainpanel, "card1");
+		}
+		else if(e.getSource() == btnTrainer)
+		{
+			new TrainerGUI(this);
+		}
+	}
+	
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	public static void main(String args[])
+	{
+		MainGUI mg = new MainGUI();
+		UM.ReadObject();
+		mg.setModel();
+	}
+
+}
