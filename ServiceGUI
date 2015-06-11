@@ -1,0 +1,108 @@
+package Project2;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+
+public class ServiceGUI extends JFrame implements ActionListener
+{
+	MainGUI mg;
+	UserManager UM = new UserManager();
+	JComboBox cb;
+	String Service[] = {"헬스", "수영장", "사우나"}; 
+	public ServiceGUI(MainGUI mg)
+	{
+		this.mg = mg;
+		setTitle("이용서비스");
+		setSize(300,70);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		cb = new JComboBox();
+		cb.setBounds(10, 10, 183, 21);
+		cb.addItem("서비스를 선택하세요.");
+		for(int i = 0; i <Service.length; i++)
+		{
+			cb.addItem(i + 1 + ". " + Service[i]);
+		}
+		getContentPane().add(cb);
+		setVisible(true);
+		cb.addActionListener(this);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		{
+			if(cb.getSelectedIndex() != 0)
+			{
+				int selected = cb.getSelectedIndex() - 1;
+				if(selected == 0)
+				{
+					findHealthUser();
+				}
+				else if(selected == 1)
+				{
+					findSwimUser();
+				}
+				else if(selected == 2)
+				{
+					findYogaUser();
+				}
+				System.out.println("2");
+				mg.card.show(mg.Mainpanel, "card2");
+				this.dispose();
+			}
+		}
+		// TODO Auto-generated method stub
+		
+	}
+	private void findHealthUser()
+	{
+		for(int i = mg.model2.getRowCount(); i > 0; i--)
+		{
+			mg.model2.removeRow(0);
+		}
+		for(int i = 0; i <UM.List.size(); i++)
+		{
+			if(UM.List.get(i).getKind().equals("헬스"))
+			{
+				mg.model2.addRow(UM.List.get(i).setVector());
+			}
+			
+		}
+	} // HealthUser 찾기
+	private void findSwimUser()
+	{
+		for(int i = mg.model2.getRowCount(); i > 0; i--)
+		{
+			mg.model2.removeRow(0);
+		}
+		for(int i = 0; i <UM.List.size(); i++)
+		{
+			if(UM.List.get(i).getKind().equals("수영장"))
+			{
+				mg.model2.addRow(UM.List.get(i).setVector());
+			}	
+		}
+	} // SwimUser 찾기
+	private void findYogaUser()
+	{
+		for(int i = mg.model2.getRowCount(); i > 0; i--)
+		{
+			mg.model2.removeRow(0);
+		}
+		for(int i = 0; i <UM.List.size(); i++)
+		{
+			if(UM.List.get(i).getKind().equals("요가"))
+			{
+				mg.model2.addRow(UM.List.get(i).setVector());
+			}
+			
+		}
+	} //YogaUser 찾기
+}
+
+
