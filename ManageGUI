@@ -20,14 +20,18 @@ public class ManageGUI extends JFrame implements ActionListener
 		cb = new JComboBox();
 		cb.setBounds(10, 10, 183, 21);
 		cb.addItem("회원을 선택하세요");
-		for(int i = 0; i < UM.List.size(); i++)
-		{
-			cb.addItem(UM.List.get(i).getNum() + ". " + UM.List.get(i).getName());
-		}
+		AddComboBox();
 		getContentPane().add(cb);
 		setVisible(true);
 		cb.addActionListener(this);
 	}
+	public void AddComboBox()
+	{
+		for(int i = 0; i < UM.List.size(); i++)
+		{
+			cb.addItem(UM.List.get(i).getNum() + ". " + UM.List.get(i).getName());
+		}
+	} // ComboBox에 회원리스트 추가
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(cb.getSelectedIndex() != 0)
@@ -42,3 +46,4 @@ public class ManageGUI extends JFrame implements ActionListener
 	}
 
 }
+
