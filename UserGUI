@@ -2,6 +2,7 @@ package Project2;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -13,21 +14,20 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 	int index = -1;
 	JFrame frame;
 	JPanel p;
-	JLabel LBNum, LBName, LBBirth, LBGender, LBPhone, LBJob, LBAddress, LBKind, LBTrainer, LBS_Day, LBE_Day; 
+	JLabel LBNum, LBName, LBBirth, LBGender, LBPhone, LBJob, LBAddress, LBKind, LBS_Day, LBE_Day; 
 	JTextField tfNum, tfName, tfAddress, tfJob; // 번호, 이름, 주소, 직업
 	JTextField tfPhone1, tfPhone2, tfPhone3; // 핸드폰번호
 	Choice CYear, CMonth, CDay; // 생년월일
 	Choice S_Year, S_Month, S_Day; // 등록일
 	Choice E_Year, E_Month, E_Day; // 만료일
-	Choice CTrainer; // 트레이너
+	JRadioButton CKind1, CKind2, CKind3; // 이용서비스
 	JRadioButton rbMan, rbWoman; // 성별
-	JRadioButton rbYes, rbNo; // 개인PT신청 유무
 	public JButton btnAdd, btnCancel, btnModify, btnRemove; // 가입, 취소, 수정, 탈퇴
 	int day[];
 	GridBagLayout gb;
 	GridBagConstraints gbc;
 	public Vector v;
-	
+	ArrayList List;
 	public UserGUI(MainGUI mg)
 	{	this.mg = mg;
 		CreateGUI();
@@ -35,7 +35,7 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		btnModify.setVisible(false);
 		btnRemove.setEnabled(false);
 		btnRemove.setVisible(false);
-	}
+	} // 회원가입 생성자
 	public UserGUI(MainGUI mg, int num)
 	{
 		this.mg = mg;
@@ -44,7 +44,8 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		btnAdd.setEnabled(false);
 		btnAdd.setVisible(false);
 		index = num;
-	}
+	} // 수정,탈퇴 생성자
+	
 	private void CreateGUI()
 	{
 		this.setTitle("회원정보");
@@ -139,33 +140,20 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		gbAdd(tfAddress, 1, 6, 3, 1);
 		
 		//개인PT 유무
-		LBKind = new JLabel("개인PT : ");
-		rbYes = new JRadioButton("Y",true);
-		rbNo = new JRadioButton("N",true);
+		LBKind = new JLabel("이용서비스 : ");
 		JPanel PKind = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		CKind1 = new JRadioButton("헬스", true);
+		CKind2 = new JRadioButton("수영장", true);
+		CKind3 = new JRadioButton("요가", true);
 		ButtonGroup group1 = new ButtonGroup();
-		group1.add(rbYes);
-		group1.add(rbNo);
-		PKind.add(rbYes);
-		PKind.add(rbNo);
+		group1.add(CKind1);
+		group1.add(CKind2);
+		group1.add(CKind3);
+		PKind.add(CKind1);
+		PKind.add(CKind2);
+		PKind.add(CKind3);
 		gbAdd(LBKind, 0, 7, 1, 1);
 		gbAdd(PKind, 1, 7, 3, 1);
-		
-		
-		//트레이너
-		LBTrainer = new JLabel("트레이너 : ");
-		CTrainer = new Choice();
-		CTrainer.addItem("-------");
-		String trainer[] = {"숀리", "줄리엔", "유재석", "예정화", "김수현", "차태현", "박명수", "김종국", "윤형빈", "남의석"};
-		for(int i = 0; i < trainer.length; i++)
-		{
-			CTrainer.add(trainer[i]);
-		}
-		rbNo.addItemListener(this);
-		JPanel PTrainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		PTrainer.add(CTrainer);
-		gbAdd(LBTrainer, 0, 8, 1, 1);
-		gbAdd(PTrainer, 1, 8, 3, 1);
 		
 		//등록일
 		LBS_Day = new JLabel("등록일 : ");
@@ -195,8 +183,8 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		PS_day.add(LBS_Month);
 		PS_day.add(S_Day);
 		PS_day.add(LBS_day);
-		gbAdd(LBS_Day, 0, 9, 1, 1);
-		gbAdd(PS_day, 1, 9, 3, 1);
+		gbAdd(LBS_Day, 0, 8, 1, 1);
+		gbAdd(PS_day, 1, 8, 3, 1);
 		
 		
 		//만료일
@@ -228,8 +216,8 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		PE_day.add(LBE_Month);
 		PE_day.add(E_Day);
 		PE_day.add(LBE_day);
-		gbAdd(LBE_Day, 0, 10, 1, 1);
-		gbAdd(PE_day, 1, 10, 3, 1);
+		gbAdd(LBE_Day, 0, 9, 1, 1);
+		gbAdd(PE_day, 1, 9, 3, 1);
 		
 		//버튼
 		JPanel PButton = new JPanel();
@@ -242,7 +230,7 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		PButton.add(btnRemove);
 		PButton.add(btnCancel);
 		
-		gbAdd(PButton, 0, 11, 4, 1);
+		gbAdd(PButton, 0, 10, 4, 1);
 		
 		btnAdd.addActionListener(this);
 		btnModify.addActionListener(this);
@@ -253,9 +241,10 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		this.setVisible(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE); // 현재창만 종료	
 	}
+	
+	// Frame에 데이터 채우기
 	private void fillData(int index)
 	{
-		
 		String num = UM.List.get(index).getNum();
 		String name = UM.List.get(index).getName();
 		String birth = UM.List.get(index).getBirth();
@@ -264,7 +253,6 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		String job = UM.List.get(index).getJob();
 		String address = UM.List.get(index).getAddress();
 		String kind =UM.List.get(index).getKind();
-		String trainer = UM.List.get(index).getTrainer();
 		String start_day = UM.List.get(index).getStart_day();
 		String end_day = UM.List.get(index).getEnd_day();
 		tfNum.setText(num);
@@ -273,7 +261,8 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		String bir[] = birth.split("/");
 		CYear.select(bir[0]);
 		CMonth.select(bir[1]);
-		CMonth.addItemListener(this);
+		//CMonth.addItemListener(this);
+		SetCDay();
 		CDay.select(bir[2]);
 		if(gender.equals("남"))
 		{
@@ -289,25 +278,27 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		tfPhone3.setText(Pns[2]);
 		tfJob.setText(job);
 		tfAddress.setText(address);
-		if(kind.equals("Y"))
+		if(kind.equals("헬스"))
 		{
-			rbYes.setSelected(true);
+			CKind1.setSelected(true);
 		}
-		else if(kind.equals("N"))
+		else if(kind.equals("수영장"))
 		{
-			rbNo.setSelected(true);
+			CKind2.setSelected(true);
 		}
-		rbNo.addItemListener(this);
-		CTrainer.select(trainer);
+		else if(kind.equals("요가"))
+		{
+			CKind3.setSelected(true);
+		}
 		String Sd[] = start_day.split("/");
 		S_Year.select(Sd[0]);
 		S_Month.select(Sd[1]);
-		S_Month.addItemListener(this);
+		SetS_Day();
 		S_Day.select(Sd[2]);
 		String Ed[] = end_day.split("/");
 		E_Year.select(Ed[0]);
 		E_Month.select(Ed[1]);
-		E_Month.addItemListener(this);
+		SetE_Day();
 		E_Day.select(Ed[2]);
 	}
 	private void gbAdd(JComponent c, int x, int y, int w, int h) 
@@ -323,6 +314,22 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 	
 	
 	public void itemStateChanged(ItemEvent ie)
+	{
+		if(ie.getSource() == CMonth)
+		{
+			SetCDay();
+		}
+		else if(ie.getSource() == S_Month)
+		{
+			SetS_Day();
+		}
+		else if(ie.getSource() == E_Month)
+		{
+			SetE_Day();
+		}
+	}
+	
+	private void SetCDay()
 	{
 		if(CMonth.getSelectedIndex() == 2)
 		{
@@ -348,6 +355,10 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 				CDay.addItem(String.valueOf(i));
 			}
 		}
+		
+	} // CDay choice에 선택지 추가
+	private void SetS_Day()
+	{
 		if(S_Month.getSelectedIndex() == 2)
 		{
 			S_Day.removeAll();
@@ -372,6 +383,9 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 				S_Day.addItem(String.valueOf(i));
 			}
 		}
+	} // S_Day choice에 선택지 추가
+	private void SetE_Day()
+	{
 		if(E_Month.getSelectedIndex() == 2)
 		{
 			E_Day.removeAll();
@@ -396,13 +410,7 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 				E_Day.addItem(String.valueOf(i));
 			}
 		}
-		if(rbNo.isSelected())
-		{
-			CTrainer.removeAll();
-			CTrainer.add("-------");
-			
-		}
-	}
+	} // E_Day choice에 선택지 추가
 	public boolean CheckInt(String n)
 	{
 		try
@@ -414,7 +422,20 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 		{
 			return false;
 		}
-	}	
+	} // 숫자 판별
+	public boolean CheckNum(String num)
+	{
+		boolean v = true;
+		for(int i = 0; i < UM.List.size(); i++)
+		{
+			if(num.equals(UM.List.get(i).getNum()))
+			{
+				v = false;
+			}
+		}
+		return v;
+		
+	} // 동일한 번호가 있는지 판별
 	public void actionPerformed(ActionEvent e)
 	{
 		if(e.getSource() == btnAdd)
@@ -425,31 +446,16 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 			String Bmonth = (String) CMonth.getSelectedItem();
 			String Bday = (String) CDay.getSelectedItem();
 			String birth = Byear +"/" + Bmonth + "/" + Bday;
-			String gender = null;
-			if(rbMan.isSelected())
-			{
-				gender = "남";
-			}
-			else if(rbWoman.isSelected())
-			{
-				gender = "여";
-			}
+			String gender = CheckGender();
+
 			String phone1 = tfPhone1.getText();
 			String phone2 = tfPhone2.getText();
 			String phone3 = tfPhone3.getText();
 			String phone = phone1 + "-" + phone2 + "-" + phone3;
 			String job = tfJob.getText();
 			String address = tfAddress.getText();
-			String kind = null;
-			if(rbYes.isSelected())
-			{
-				kind = "Y";
-			}
-			else if(rbNo.isSelected())
-			{
-				kind = "N";
-			}
-			String trainer = (String) CTrainer.getSelectedItem();
+			String kind = CheckKind();
+			
 			String Syear = (String) S_Year.getSelectedItem();
 			String Smonth = (String) S_Month.getSelectedItem();
 			String Sday = (String) S_Day.getSelectedItem();
@@ -458,15 +464,7 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 			String Emonth = (String) E_Month.getSelectedItem();
 			String Eday = (String) E_Day.getSelectedItem();
 			String end_day = Eyear +"/" + Emonth + "/" + Eday;
-			boolean s = true;
-			for(int i = 0; i < UM.List.size(); i++)
-			{
-				if(num.equals(UM.List.get(i).getNum()))
-				{
-					s = false;
-				}
-			}
-			if(s == false)
+			if(CheckNum(num) == false)
 			{
 				JOptionPane.showMessageDialog(this, "동일한 회원번호가 있습니다.", "경고", JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -492,10 +490,6 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 			else if(address.equals(""))
 			{
 				JOptionPane.showMessageDialog(this, "주소를 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
-			}
-			else if(CTrainer.equals("-------") && rbYes.isSelected())
-			{
-				JOptionPane.showMessageDialog(this, "트레이너를 선택해주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
 			}
 			else if(Syear.equals("-------") || Smonth.equals("-------") || Sday.equals("-------") )
 			{
@@ -526,9 +520,10 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 				}
 				else
 				{
-					UM.AddUser(num, name, birth, gender, phone, job, address, kind, trainer, start_day, end_day);
+					UM.AddUser(num, name, birth, gender, phone, job, address, kind, start_day, end_day);
 					this.dispose();
-					mg.setModel();
+					mg.ResetModel();
+					mg.AddModel();
 					UM.SaveObject();
 				}
 			}
@@ -544,31 +539,16 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 			String Bmonth = (String) CMonth.getSelectedItem();
 			String Bday = (String) CDay.getSelectedItem();
 			String birth = Byear +"/" + Bmonth + "/" + Bday;
-			String gender = null;
-			if(rbMan.isSelected())
-			{
-				gender = "남";
-			}
-			else if(rbWoman.isSelected())
-			{
-				gender = "여";
-			}
+			String gender = CheckGender();
+
 			String phone1 = tfPhone1.getText();
 			String phone2 = tfPhone2.getText();
 			String phone3 = tfPhone3.getText();
 			String phone = phone1 + "-" + phone2 + "-" + phone3;
 			String job = tfJob.getText();
 			String address = tfAddress.getText();
-			String kind = null;
-			if(rbYes.isSelected())
-			{
-				kind = "Y";
-			}
-			else if(rbNo.isSelected())
-			{
-				kind = "N";
-			}
-			String trainer = CTrainer.getSelectedItem();
+			String kind = CheckKind();
+	
 			String Syear = (String) S_Year.getSelectedItem();
 			String Smonth = (String) S_Month.getSelectedItem();
 			String Sday = (String) S_Day.getSelectedItem();
@@ -596,10 +576,6 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 			{
 				JOptionPane.showMessageDialog(this, "주소를 입력해 주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
 			}
-			else if(trainer.equals("-------"))
-			{
-				JOptionPane.showMessageDialog(this, "트레이너를 선택해주세요", "메시지", JOptionPane.INFORMATION_MESSAGE);
-			}
 			else if(Syear.equals("-------") || Smonth.equals("-------") || Sday.equals("-------") )
 			{
 				JOptionPane.showMessageDialog(this, "등록일을 선택해주세요", "경고", JOptionPane.INFORMATION_MESSAGE);
@@ -616,9 +592,11 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 				}
 				else
 				{
-					UM.ModifyUser(index, name, birth, gender, phone, job,  address, kind, trainer, start_day, end_day);
+					UM.ModifyUser(index, name, birth, gender, phone, job,  address, kind, start_day, end_day);
 					this.dispose();
-					mg.setModel();
+					UM.SaveObject();
+					mg.ResetModel();
+					mg.AddModel();
 				}
 			}	
 		}
@@ -628,7 +606,9 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 			if(a == JOptionPane.OK_OPTION)
 			{
 				UM.RemoveUser(index);
-				mg.setModel();
+				mg.ResetModel();
+				mg.AddModel();
+				UM.SaveObject();
 				this.dispose();
 			}
 			else
@@ -637,5 +617,35 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 			}
 		}
 	}
+	private String CheckKind()
+	{
+		String kind = null;
+		if(CKind1.isSelected())
+		{
+			kind = "헬스";
+		}
+		else if(CKind2.isSelected())
+		{
+			kind = "수영장";
+		}
+		else if(CKind3.isSelected())
+		{
+			kind = "요가";
+		}
+		return kind;
+	} // Kind RadioButton의 값 찾기
+	private String CheckGender()
+	{
+		String gender = null;
+		if(rbMan.isSelected())
+		{
+			gender = "남";
+		}
+		else if(rbWoman.isSelected())
+		{
+			gender = "여";
+		}
+		return gender;
+	} // Gender RadioButton의 값찾기
 }
 
