@@ -7,17 +7,19 @@ import javax.swing.*;
 import java.awt.event.*;
 
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 public class MainGUI extends JFrame implements ActionListener, MouseListener {
 	static UserManager UM = new UserManager();
 	CardLayout card;
 	TitledBorder border1, border2; 
 	JFrame frame;
-	JPanel panel, Mainpanel, Allpanel, Trainerpanel;
-	JTable Maintable, Trainertable;
+	JPanel panel, Mainpanel, Allpanel, Servicepanel;
+	JTable Maintable, Servicetable;
 	JScrollPane sp1, sp2;
-	JButton btnAdd, btnManage, btnSearch, btnAll, btnTrainer;
+	JButton btnAdd, btnManage, btnSearch, btnAll, btnService, btnEnd;
 	Vector col = new Vector();
 	DefaultTableModel model = new DefaultTableModel();
 	DefaultTableModel model2 = new DefaultTableModel();
@@ -31,6 +33,53 @@ public class MainGUI extends JFrame implements ActionListener, MouseListener {
 		Mainpanel.setBorder(border1);
 		add(Mainpanel);
 		Allpanel = new JPanel();
+		Allpanel.setLayout(new BorderLayout());
+		
+		CreatePane();
+		sp1.setBounds(0,0, 800, 150);
+		Allpanel.add(sp1, "Center");
+		Mainpanel.add(Allpanel, "card1");
+		
+		Servicepanel = new JPanel();
+		Servicepanel.setLayout(new BorderLayout());
+		Servicepanel.add(sp2, "Center");
+		Mainpanel.add(Servicepanel, "card2");
+		panel = new JPanel();
+		panel.setLayout(new GridLayout(6, 1 , 0, 10));
+		btnAdd = new JButton("회원등록");
+		btnManage = new JButton("회원관리");
+		btnSearch = new JButton("회원찾기");
+		btnAll = new JButton("전체회원");
+		btnService = new JButton("이용서비스");
+		btnEnd = new JButton("종료");
+		panel.add(btnAdd);
+		panel.add(btnManage);
+		panel.add(btnSearch);
+		panel.add(btnAll);
+		panel.add(btnService);
+		panel.add(btnEnd);
+		border1 = new TitledBorder("메뉴");
+		panel.setBorder(border1);
+		add(panel, BorderLayout.EAST);
+		
+		card.show(Mainpanel ,"card1");
+		setSize(1000, 500);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setVisible(true);
+		
+		Maintable.addMouseListener(this);
+		Servicetable.addMouseListener(this);
+		btnAdd.addActionListener(this);
+		btnManage.addActionListener(this);
+		btnSearch.addActionListener(this);
+		btnAll.addActionListener(this);
+		btnService.addActionListener(this);
+		btnEnd.addActionListener(this);
+	}
+	
+	//JScrollPane 생성
+	private void CreatePane()
+	{
 		col = setCol();
 		model = new DefaultTableModel(col, 0)
 		{
@@ -38,13 +87,27 @@ public class MainGUI extends JFrame implements ActionListener, MouseListener {
 			{
 				return false;
 			}
-		};
+		}; 
 		Maintable = new JTable(model);
+		Maintable.getColumn("회원번호").setPreferredWidth(150);
+		Maintable.getColumn("회원이름").setPreferredWidth(150);
+		Maintable.getColumn("생년월일").setPreferredWidth(200);
+		Maintable.getColumn("성별").setPreferredWidth(150);
+		Maintable.getColumn("핸드폰번호").setPreferredWidth(250);
+		Maintable.getColumn("직업").setPreferredWidth(150);
+		Maintable.getColumn("주소").setPreferredWidth(300);
+		Maintable.getColumn("이용서비스").setPreferredWidth(200);
+		Maintable.getColumn("등록일").setPreferredWidth(250);
+		Maintable.getColumn("만료일").setPreferredWidth(250);
+		Maintable.setRowHeight(20);
+		DefaultTableCellRenderer tScheduleCellRenderer = new DefaultTableCellRenderer();	 
+		tScheduleCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		TableColumnModel tcmSchedule = Maintable.getColumnModel();
+		for (int i = 0; i < tcmSchedule.getColumnCount(); i++) 
+		{
+			tcmSchedule.getColumn(i).setCellRenderer(tScheduleCellRenderer);
+		} // Maintable의 데이터 가운데 정렬
 		sp1 = new JScrollPane(Maintable);
-		Allpanel.add(sp1);
-		Mainpanel.add(Allpanel, "card1");
-		
-		Trainerpanel = new JPanel();
 		model2 = new DefaultTableModel(col, 0)
 		{
 			public boolean isCellEditable(int rowindex, int colindex)
@@ -52,51 +115,26 @@ public class MainGUI extends JFrame implements ActionListener, MouseListener {
 				return false;
 			}
 		};
-		Trainertable = new JTable(model2);
-		sp2 = new JScrollPane(Trainertable);
-		Trainerpanel.add(sp2);
-		Mainpanel.add(Trainerpanel, "card2");
-		
-
-		CreateMenu();
-		panel = new JPanel();
-		panel.setLayout(new GridLayout(5, 1 , 0, 10));
-		btnAdd = new JButton("회원등록");
-		btnManage = new JButton("회원관리");
-		btnSearch = new JButton("회원찾기");
-		btnAll = new JButton("전체회원");
-		btnTrainer = new JButton("트레이너");
-		panel.add(btnAdd);
-		panel.add(btnManage);
-		panel.add(btnSearch);
-		panel.add(btnAll);
-		panel.add(btnTrainer);
-		border1 = new TitledBorder("메뉴");
-		panel.setBorder(border1);
-		add(panel, BorderLayout.EAST);
-		
-		card.show(Mainpanel ,"card1");
-		setSize(700, 350);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setVisible(true);
-		
-		Maintable.addMouseListener(this);
-		btnAdd.addActionListener(this);
-		btnManage.addActionListener(this);
-		btnSearch.addActionListener(this);
-		btnAll.addActionListener(this);
-		btnTrainer.addActionListener(this);
-	}
-	private void CreateMenu()
-	{
-		JMenuBar mb = new JMenuBar();
-		setJMenuBar(mb);
-		JMenu menu = new JMenu("File");
-		mb.add(menu);
-		JMenuItem menuOpen = new JMenuItem("데이터 불러오기");
-		JMenuItem menuExit = new JMenuItem("Exit");
-		menu.add(menuOpen);
-		menu.add(menuExit);	
+		Servicetable = new JTable(model2);
+		Servicetable.getColumn("회원번호").setPreferredWidth(150);
+		Servicetable.getColumn("회원이름").setPreferredWidth(150);
+		Servicetable.getColumn("생년월일").setPreferredWidth(200);
+		Servicetable.getColumn("성별").setPreferredWidth(150);
+		Servicetable.getColumn("핸드폰번호").setPreferredWidth(250);
+		Servicetable.getColumn("직업").setPreferredWidth(150);
+		Servicetable.getColumn("주소").setPreferredWidth(300);
+		Servicetable.getColumn("이용서비스").setPreferredWidth(200);
+		Servicetable.getColumn("등록일").setPreferredWidth(250);
+		Servicetable.getColumn("만료일").setPreferredWidth(250);
+		Servicetable.setRowHeight(20);
+		sp2 = new JScrollPane(Servicetable);
+		DefaultTableCellRenderer tScheduleCellRenderer1 = new DefaultTableCellRenderer();
+		tScheduleCellRenderer1.setHorizontalAlignment(SwingConstants.CENTER);
+		TableColumnModel tcmSchedule1 = Servicetable.getColumnModel();
+		for (int i = 0; i < tcmSchedule1.getColumnCount(); i++) 
+		{
+			tcmSchedule1.getColumn(i).setCellRenderer(tScheduleCellRenderer);
+		} // Servicetable의 데이터 가운데정렬
 	}
 	private Vector setCol()
 	{
@@ -108,42 +146,51 @@ public class MainGUI extends JFrame implements ActionListener, MouseListener {
 		colName.add("핸드폰번호");
 		colName.add("직업");
 		colName.add("주소");
-		colName.add("개인PT여부");
-		colName.add("트레이너");
+		colName.add("이용서비스");
 		colName.add("등록일");
 		colName.add("만료일");
 		return colName;
-	}
-	public void setModel()
+	} // 테이블의 Column을 벡터화
+	public void ResetModel()
 	{
 		for(int i = model.getRowCount(); i > 0; i--)
 		{
 			model.removeRow(0);
 		}
+	} // 모델의 데이터 초기화
+	public void AddModel()
+	{
 		for(int i = 0; i < UM.List.size(); i++)
 		{
 			model.addRow(UM.List.get(i).setVector());
 		}
-	}
-	public void mouseClicked(MouseEvent e)
+	} // 모델에 데이터 추가
+	private int findNum(String num)
 	{
-		int r = Maintable.getSelectedRow();
-		String num = (String) Maintable.getValueAt(r, 0);
+		int index = -1;
 		for(int i = 0; i < UM.List.size(); i++)
 		{
 			if(num.equals(UM.List.get(i).getNum()))
 			{
-				new UserGUI(this, i);
+				index = i;
+				break;
 			}
 		}
-		int x = Trainertable.getSelectedRow();
-		String Num = (String) Maintable.getValueAt(r, 0);
-		for(int i = 0; i < UM.List.size(); i++)
+		return index;
+	} // 리스트에서 해당되는 인덱스번호 찾기
+	public void mouseClicked(MouseEvent e)
+	{
+		if(e.getClickCount()==2 && e.getSource() == Maintable)
 		{
-			if(Num.equals(UM.List.get(i).getNum()))
-			{
-				new UserGUI(this, i);
-			}
+			int r = Maintable.getSelectedRow();
+			String num = (String) Maintable.getValueAt(r, 0);
+			new UserGUI(this, findNum(num));
+		}
+		if(e.getClickCount()==2 && e.getSource() == Servicetable)
+		{
+			int r = Servicetable.getSelectedRow();
+			String num = (String) Servicetable.getValueAt(r, 0);
+			new UserGUI(this, findNum(num));
 		}
 	}
 	public void actionPerformed(ActionEvent e)
@@ -164,9 +211,13 @@ public class MainGUI extends JFrame implements ActionListener, MouseListener {
 		{
 			card.show(Mainpanel, "card1");
 		}
-		else if(e.getSource() == btnTrainer)
+		else if(e.getSource() == btnService)
 		{
-			new TrainerGUI(this);
+			new ServiceGUI(this);
+		}
+		else if(e.getSource() == btnEnd)
+		{
+			this.dispose();
 		}
 	}
 	
@@ -193,11 +244,12 @@ public class MainGUI extends JFrame implements ActionListener, MouseListener {
 		// TODO Auto-generated method stub
 		
 	}
+
 	public static void main(String args[])
 	{
 		MainGUI mg = new MainGUI();
 		UM.ReadObject();
-		mg.setModel();
+		mg.AddModel();
 	}
 
 }
