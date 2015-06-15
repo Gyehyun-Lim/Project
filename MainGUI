@@ -217,7 +217,8 @@ public class MainGUI extends JFrame implements ActionListener, MouseListener {
 		}
 		else if(e.getSource() == btnEnd)
 		{
-			this.dispose();
+			System.exit(0);
+			System.out.println("프로그램이 종료되었습니다.");
 		}
 	}
 	
