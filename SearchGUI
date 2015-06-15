@@ -47,9 +47,16 @@ public class SearchGUI extends JFrame implements ActionListener{
 		{
 			int search = 1;
 			String num = JOptionPane.showInputDialog("검색할 번호을 입력하세요");
-			if(num == null)
+			if(num.equals(""))
 			{
-				return;
+				while(true)
+				{
+					JOptionPane.showMessageDialog(this, "검색하실 회원번호를 입력하세요.", "메시지", JOptionPane.INFORMATION_MESSAGE);
+					num = JOptionPane.showInputDialog("검색할 번호을 입력하세요");
+					if(!num.equals(""))
+						break;
+				}
+				
 			}
 			if(UM.List.size() != 0)
 			{
@@ -59,8 +66,6 @@ public class SearchGUI extends JFrame implements ActionListener{
 					{
 						new UserGUI(mg, i);
 						this.dispose();
-						System.out.println(search);
-						System.out.println(UM.List.size());
 						break;
 					}
 					else
@@ -72,9 +77,6 @@ public class SearchGUI extends JFrame implements ActionListener{
 				if(search > UM.List.size())
 				{
 					JOptionPane.showMessageDialog(this, "일치하는 회원이 없습니다.", "메시지", JOptionPane.INFORMATION_MESSAGE);
-					System.out.println("aaa");
-					System.out.println(search);
-					System.out.println(UM.List.size());
 				}
 			}
 			else
@@ -90,9 +92,16 @@ public class SearchGUI extends JFrame implements ActionListener{
 			int index = 0;
 			String nameNum = null;
 			String name = JOptionPane.showInputDialog("검색할 이름을 입력하세요");
-			if(name == null)
+			if(name.equals(""))
 			{
-				return;
+				while(true)
+				{
+					JOptionPane.showMessageDialog(this, "검색하실 회원번호를 입력하세요.", "메시지", JOptionPane.INFORMATION_MESSAGE);
+					name = JOptionPane.showInputDialog("검색할 이름을 입력하세요");
+					if(!name.equals(""))
+						break;
+				}
+				
 			}
 			if(UM.List.size() != 0)
 			{
@@ -102,6 +111,10 @@ public class SearchGUI extends JFrame implements ActionListener{
 					{
 						count[index] = i;
 						index++;
+					}
+					else
+					{
+						search++;
 					}
 				}
 				if(index > 1)
