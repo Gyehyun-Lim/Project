@@ -14,7 +14,7 @@ public class ServiceGUI extends JFrame implements ActionListener
 	MainGUI mg;
 	UserManager UM = new UserManager();
 	JComboBox cb;
-	String Service[] = {"헬스", "수영장", "사우나"}; 
+	String Service[] = {"헬스", "수영장", "요가"}; 
 	public ServiceGUI(MainGUI mg)
 	{
 		this.mg = mg;
@@ -51,7 +51,6 @@ public class ServiceGUI extends JFrame implements ActionListener
 				{
 					findYogaUser();
 				}
-				System.out.println("2");
 				mg.card.show(mg.Mainpanel, "card2");
 				this.dispose();
 			}
@@ -67,7 +66,7 @@ public class ServiceGUI extends JFrame implements ActionListener
 		}
 		for(int i = 0; i <UM.List.size(); i++)
 		{
-			if(UM.List.get(i).getKind().equals("헬스"))
+			if(UM.List.get(i).getClass() == HealthUser.class)
 			{
 				mg.model2.addRow(UM.List.get(i).setVector());
 			}
@@ -82,7 +81,7 @@ public class ServiceGUI extends JFrame implements ActionListener
 		}
 		for(int i = 0; i <UM.List.size(); i++)
 		{
-			if(UM.List.get(i).getKind().equals("수영장"))
+			if(UM.List.get(i).getClass() == SwimUser.class)
 			{
 				mg.model2.addRow(UM.List.get(i).setVector());
 			}	
@@ -96,7 +95,7 @@ public class ServiceGUI extends JFrame implements ActionListener
 		}
 		for(int i = 0; i <UM.List.size(); i++)
 		{
-			if(UM.List.get(i).getKind().equals("요가"))
+			if(UM.List.get(i).getClass() == YogaUser.class)
 			{
 				mg.model2.addRow(UM.List.get(i).setVector());
 			}
