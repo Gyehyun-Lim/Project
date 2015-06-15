@@ -27,7 +27,6 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 	GridBagLayout gb;
 	GridBagConstraints gbc;
 	public Vector v;
-	ArrayList List;
 	public UserGUI(MainGUI mg)
 	{	this.mg = mg;
 		CreateGUI();
@@ -38,7 +37,7 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 	} // 회원가입 생성자
 	public UserGUI(MainGUI mg, int num)
 	{
-		this.mg = mg;
+		this.mg = mg;	
 		CreateGUI();
 		fillData(num);
 		btnAdd.setEnabled(false);
@@ -521,10 +520,11 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 				else
 				{
 					UM.AddUser(num, name, birth, gender, phone, job, address, kind, start_day, end_day);
-					this.dispose();
 					mg.ResetModel();
 					mg.AddModel();
 					UM.SaveObject();
+					JOptionPane.showMessageDialog(this, "회원등록이 완료되었습니다.", "메세지", JOptionPane.INFORMATION_MESSAGE);
+					this.dispose();
 				}
 			}
 		}	
@@ -592,23 +592,25 @@ public class UserGUI extends JFrame implements ActionListener, ItemListener {
 				}
 				else
 				{
-					UM.ModifyUser(index, name, birth, gender, phone, job,  address, kind, start_day, end_day);
-					this.dispose();
+					UM.ModifyUser(index, name, birth, gender, phone, job,  address, kind, start_day, end_day);	
 					UM.SaveObject();
 					mg.ResetModel();
 					mg.AddModel();
+					JOptionPane.showMessageDialog(this, "회원정보가 수정되었습니다.", "메세지", JOptionPane.INFORMATION_MESSAGE);
+					this.dispose();	
 				}
 			}	
 		}
 		else if(e.getSource() == btnRemove)
 		{
-			int a = JOptionPane.showConfirmDialog(this, "정말 삭제하시겠습니까?", "Confirm", JOptionPane.YES_NO_OPTION);
+			int a = JOptionPane.showConfirmDialog(this, "정말 삭제하시겠습니까?", "삭제", JOptionPane.YES_NO_OPTION);
 			if(a == JOptionPane.OK_OPTION)
 			{
 				UM.RemoveUser(index);
 				mg.ResetModel();
 				mg.AddModel();
 				UM.SaveObject();
+				JOptionPane.showMessageDialog(this, "회원정보가 삭제되었습니다.", "메세지", JOptionPane.INFORMATION_MESSAGE);
 				this.dispose();
 			}
 			else
