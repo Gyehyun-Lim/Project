@@ -1,110 +1,107 @@
 package Project2;
 
-import java.util.Vector;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
 
-public class HealthUser extends User{
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
 
-	public HealthUser(String num, String name, String birth, String gender, String phone, String job, String address, String kind, String start_day, String end_day) 
+public class ServiceGUI extends JFrame implements ActionListener
+{
+	MainGUI mg;
+	UserManager UM = new UserManager();
+	JComboBox cb;
+	String Service[] = {"헬스", "수영장", "요가"}; 
+	public ServiceGUI(MainGUI mg)
 	{
-		super(num, name, birth, gender, phone, job, address, kind, start_day, end_day);
+		this.mg = mg;
+		setTitle("이용서비스");
+		setSize(300,70);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		cb = new JComboBox();
+		cb.setBounds(10, 10, 183, 21);
+		cb.addItem("서비스를 선택하세요.");
+		for(int i = 0; i <Service.length; i++)
+		{
+			cb.addItem(i + 1 + ". " + Service[i]);
+		}
+		getContentPane().add(cb);
+		setVisible(true);
+		cb.addActionListener(this);
 	}
-	public String getNum()
-	{
-		return this.num; 
-	} // 회원번호  getter
-	public String getName()
-	{
-		return this.name;
-	} // 회원이름 getter
-	public String getBirth()
-	{
-		return this.birth;
-	} // 생년월일 getter
-	public String getGender()
-	{
-		return this.gender;
-	} // 성별 getter
-	public String getPhone()
-	{
-		return this.phone;
-	} // 핸드폰번호 getter
-	public String getJob()
-	{
-		return this.job;
-	} // 직업 getter
-	public String getAddress()
-	{
-		return this.address;
-	} // 주소 getter
-	public String getKind()
-	{
-		return this.kind;
-	} // PT종류 getter
-
-	public String getStart_day()
-	{
-		return this.start_day;
-	} // 등록일 getter
-	public String getEnd_day()
-	{
-		return this.end_day;
-	} // 만료일 getter
-	public void setNum(String num)
-	{
-		this.num = num;
-	} // 회원번호 setter
-	public void setName(String name)
-	{
-		this.name = name;
-	} // 회원이름 setter
-	public void setBirth(String birth)
-	{
-		this.birth = birth;
-	} // 생년월일 setter
-	public void setGender(String gender)
-	{
-		this.gender = gender;
-	} // 성별 setter
-	public void setPhone(String phone)
-	{
-		this.phone = phone;
-	} // 핸드폰번호 setter
-	public void setJob(String job)
-	{
-		this.job = job;
-	} // 직업 setter
-	public void setAddress(String address)
-	{
-		this.address = address;
-	} // 주소 setter
-	public void setKind(String kind)
-	{
-		this.kind = kind;
-	} // 서비스종류 setter
-
-	public void setStart_day(String start_day)
-	{
-		this.start_day = start_day;
-	} // 등록일 setter
-	public void setEnd_day(String end_day)
-	{
-		this.end_day = end_day;
-	} // 만료일 setter
-	public Vector setVector()
-	{
-		Vector v = new Vector();
-		v.add(this.num);
-		v.add(this.name);
-		v.add(this.birth);
-		v.add(this.gender);
-		v.add(this.phone);
-		v.add(this.job);
-		v.add(this.address);
-		v.add(this.kind);
-		v.add(this.start_day);
-		v.add(this.end_day);
-		return v;		
-	} // HealthUser 객체백터화
 	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		{
+			if(cb.getSelectedIndex() != 0)
+			{
+				int selected = cb.getSelectedIndex() - 1;
+				if(selected == 0)
+				{
+					findHealthUser();
+				}
+				else if(selected == 1)
+				{
+					findSwimUser();
+				}
+				else if(selected == 2)
+				{
+					findYogaUser();
+				}
+				mg.card.show(mg.Mainpanel, "card2");
+				this.dispose();
+			}
+		}
+		// TODO Auto-generated method stub
+		
+	}
+	private void findHealthUser()
+	{
+		for(int i = mg.model2.getRowCount(); i > 0; i--)
+		{
+			mg.model2.removeRow(0);
+		}
+		for(int i = 0; i <UM.List.size(); i++)
+		{
+			if(UM.List.get(i).getClass() == HealthUser.class)
+			{
+				mg.model2.addRow(UM.List.get(i).setVector());
+			}
+			
+		}
+	} // HealthUser 찾기
+	private void findSwimUser()
+	{
+		for(int i = mg.model2.getRowCount(); i > 0; i--)
+		{
+			mg.model2.removeRow(0);
+		}
+		for(int i = 0; i <UM.List.size(); i++)
+		{
+			if(UM.List.get(i).getClass() == SwimUser.class)
+			{
+				mg.model2.addRow(UM.List.get(i).setVector());
+			}	
+		}
+	} // SwimUser 찾기
+	private void findYogaUser()
+	{
+		for(int i = mg.model2.getRowCount(); i > 0; i--)
+		{
+			mg.model2.removeRow(0);
+		}
+		for(int i = 0; i <UM.List.size(); i++)
+		{
+			if(UM.List.get(i).getClass() == YogaUser.class)
+			{
+				mg.model2.addRow(UM.List.get(i).setVector());
+			}
+			
+		}
+	} //YogaUser 찾기
 }
+
 
