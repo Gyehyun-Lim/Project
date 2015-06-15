@@ -37,7 +37,6 @@ public class ManageGUI extends JFrame implements ActionListener
 		if(cb.getSelectedIndex() != 0)
 		{
 			int selected = cb.getSelectedIndex() - 1;
-			System.out.println("1");
 			new UserGUI(mg, selected);
 			this.dispose();
 		}
@@ -46,4 +45,3 @@ public class ManageGUI extends JFrame implements ActionListener
 	}
 
 }
-
